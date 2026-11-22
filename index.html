@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f2a1c">
+<title>Fabricación</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icono-192.png">
+<style>
+:root{--papel:#f3f1ea;--hoja:#fffdf8;--tinta:#1f2a1c;--gris:#667061;--linea:#d8d6cb;--acento:#4d7c0f;--amb:#a16207;--rojo:#b91c1c}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--papel);color:var(--tinta);-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:5;background:var(--tinta);color:#fff;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;gap:10px;align-items:center;border-bottom:6px solid var(--acento)}
+header h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:none;border:0;color:#fff;font-size:22px;padding:4px 8px;min-height:40px}
+main{padding:12px 12px 40px;max-width:900px;margin:0 auto}
+.estado{font-size:13px;color:var(--gris);margin:0 2px 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--hoja);border:1px solid var(--linea);border-radius:999px;padding:8px 14px;min-height:40px;font-weight:600;font-size:14px}
+.chip.on{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+h2.g{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acento);margin:16px 2px 6px}
+.card{display:block;width:100%;text-align:left;background:var(--hoja);border:1px solid var(--linea);border-radius:12px;padding:11px 13px;margin-bottom:7px}
+.card .t{font-weight:700}.card .s{font-size:13px;color:var(--gris);margin-top:2px}
+.est{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px;background:#e7e5e4;color:var(--gris)}
+.est.diseñado{background:#dcfce7;color:#15803d}.est.borrador{background:#fef3c7;color:var(--amb)}.est.por{background:#fee2e2;color:var(--rojo)}.est.fab{background:#dbeafe;color:#1d4ed8}.est.ter{background:#1f2a1c;color:#fff}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin:0 -12px 10px;padding:0 12px;scrollbar-width:none}
+.tabs button{flex:0 0 auto;background:none;border:0;border-bottom:3px solid transparent;padding:9px 10px;font-weight:600;color:var(--gris);min-height:44px}
+.tabs button.on{color:var(--tinta);border-color:var(--acento)}
+.caja{background:var(--hoja);border:1px solid var(--linea);border-radius:12px;padding:11px 13px;margin-bottom:9px}
+.rev{background:#fef3c7;border:1px solid #f1d58a;border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:14px}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--gris);text-align:left;padding:5px 4px;border-bottom:1px solid var(--linea)}
+td{padding:7px 4px;border-bottom:1px solid #ece9df;vertical-align:top;overflow-wrap:anywhere}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.cod{font-weight:800}.sub{font-size:12px;color:var(--gris)}
+.warn{color:var(--amb);font-weight:700}
+.barra{display:flex;height:22px;border:1px solid var(--tinta);border-radius:3px;overflow:hidden;margin:4px 0 8px;background:repeating-linear-gradient(45deg,#eee,#eee 4px,#ddd 4px,#ddd 8px)}
+.barra span{border-right:1px solid var(--tinta);background:#d9f99d;font-size:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+.hoja img{display:block;width:100%;border-radius:8px;background:#ece8de;min-height:100px}
+.visor{width:100%;height:calc(100vh - 210px);border:1px solid var(--linea);border-radius:12px;background:#fff}
+.btn{background:var(--tinta);color:#fff;border:0;border-radius:10px;padding:10px 14px;min-height:44px;font-weight:600}
+.btn.sec{background:var(--hoja);color:var(--tinta);border:1px solid var(--linea)}
+.fila{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+input.campo{flex:1;min-width:0;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;padding:11px 12px;min-height:48px;font-size:18px}
+.res{font-size:28px;font-weight:800;margin:10px 2px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #ece9df}
+.vacio{text-align:center;color:var(--gris);padding:24px 12px}
+#zoom{position:fixed;inset:0;z-index:20;background:#fff;overflow:auto;display:none}
+#zoom img{display:block;width:260%;max-width:none}
+#zoom button{position:fixed;top:calc(10px + env(safe-area-inset-top));right:10px;background:var(--tinta);color:#fff;border:0;border-radius:999px;width:46px;height:46px;font-size:22px}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--tinta);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header><button id="atras" hidden>‹</button><h1 id="titulo">Fabricación</h1><button id="aj">⚙</button></header>
+<main id="main"></main>
+<div id="zoom"><button id="zc">✕</button><img id="zi" alt=""></div>
+<div id="toast"></div>
+<script>
+'use strict';
+const VERSION='1.0',GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'fabricacion'},KERF=3;
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S={vista:'inicio',proy:localStorage.getItem('fa_proy')||'todos',id:null,tab:'resumen'};
+let token='',ind=null,items={},estado='',urls={};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2400);}
+function llaveBitacora(){return new Promise(res=>{try{const r=indexedDB.open('bitacora');r.onupgradeneeded=()=>{try{r.transaction.abort();}catch(e){}res('');};r.onerror=()=>res('');
+ r.onsuccess=()=>{const db=r.result;try{if(!db.objectStoreNames.contains('meta')){db.close();return res('');}const g=db.transaction('meta').objectStore('meta').get('token');
+ g.onsuccess=()=>{db.close();res((g.result&&g.result.v)||'');};g.onerror=()=>{db.close();res('');};}catch(e){db.close();res('');}};}catch(e){res('');}});}
+async function cacheDe(){try{return await caches.open('fabricacion-datos');}catch(e){return null;}}
+async function red(ruta){const r=await fetch('https://api.github.com/repos/'+GH.dueno+'/'+GH.repo+'/contents/'+ruta.split('/').map(encodeURIComponent).join('/'),{cache:'no-store',
+ headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28'}});
+ if(!r.ok)throw new Error(r.status===401?'La llave no sirve o venció.':'No se pudo traer '+ruta+' ('+r.status+').');return r.blob();}
+async function archivo(ruta,v,fresco){const k='https://datos.local/'+ruta+'?v='+(v||'');const c=await cacheDe();
+ if(c&&!fresco){const g=await c.match(k);if(g)return g.blob();}
+ if(!token||!navigator.onLine){if(c){const g=await c.match(k);if(g)return g.blob();}throw new Error('sin señal');}
+ const b=await red(ruta);if(c)await c.put(k,new Response(b));return b;}
+async function url(r,v){const k=r+v;if(!urls[k])urls[k]=URL.createObjectURL(await archivo(r,v));return urls[k];}
+async function json(r,v,fresco){return JSON.parse(await (await archivo(r,v,fresco)).text());}
+async function cargar(fresco){
+ try{ind=await json(GH.carpeta+'/indice.json','',!!fresco||!!(token&&navigator.onLine));estado=token&&navigator.onLine?'Al día · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}):'Sin señal: se muestra lo guardado.';}
+ catch(e){estado=token?(e.message==='sin señal'?'Sin señal y sin datos guardados.':e.message):'Sin llave. Abre la Bitácora una vez en este navegador o pega la llave en Ajustes.';}
+ pintar();}
+async function item(id){const m=ind.items.find(x=>x.id===id);if(!items[id]||items[id].actualizado!==m.actualizado)items[id]=await json(GH.carpeta+'/'+id+'/item.json',m.actualizado);return items[id];}
+const EST={'diseñado':['diseñado','Diseñado'],'borrador':['borrador','Borrador'],'por diseñar':['por','Por diseñar'],'en fabricación':['fab','En fabricación'],'terminado':['ter','Terminado']};
+const badge=e=>{const x=EST[e]||['','—'];return `<span class="est ${x[0]}">${x[1]}</span>`;};
+const mm=v=>v==null||v===''?'—':Number(v).toLocaleString('es-CO');
+function pintar(){$('#atras').hidden=S.vista==='inicio';
+ if(S.vista==='ajustes')return pintarAjustes();
+ if(S.vista==='item')return pintarItem();
+ $('#titulo').textContent='Fabricación';
+ if(!ind){$('#main').innerHTML=`<p class="estado">${esc(estado||'Cargando…')}</p>`;return;}
+ const proys=[...new Map(ind.items.map(i=>[i.proyecto,i.proyectoNombre])).entries()];
+ const lst=ind.items.filter(i=>S.proy==='todos'||i.proyecto===S.proy);
+ const orden=['en fabricación','diseñado','borrador','por diseñar','terminado'];
+ let h=`<p class="estado">${esc(estado)}</p><div class="chips"><button class="chip${S.proy==='todos'?' on':''}" data-p="todos">Todos</button>${proys.map(([id,n])=>`<button class="chip${S.proy===id?' on':''}" data-p="${esc(id)}">${esc(n)}</button>`).join('')}</div>`;
+ for(const e of orden){const g=lst.filter(i=>i.estado===e);if(!g.length)continue;h+=`<h2 class="g">${EST[e][1]}</h2>`+g.map(i=>`<button class="card" data-i="${esc(i.id)}"><div class="t">${esc(i.nombre)}</div><div class="s">${badge(i.estado)}${esc(i.proyectoNombre)} · ${esc(i.tipo)}${i.piezas?' · '+i.piezas+' piezas':''}${i.revisar?` · <span class="warn">⚠ ${i.revisar}</span>`:''}</div></button>`).join('');}
+ $('#main').innerHTML=h;
+ document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.proy=b.dataset.p;localStorage.setItem('fa_proy',S.proy);pintar();});
+ document.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{S.vista='item';S.id=b.dataset.i;S.tab='resumen';scrollTo(0,0);pintar();});}
+async function pintarItem(){let it;try{it=await item(S.id);}catch(e){$('#main').innerHTML='<p class="vacio">No se pudo abrir (sin señal y sin guardar).</p>';return;}
+ $('#titulo').textContent=it.nombre;
+ const tabs=[['resumen','Resumen'],['piezas','Piezas'],['corte','Corte y compras'],...(it.planos.length?[['plano','Plano']]:[]),...(it.visor?[['3d','3D']]:[]),['taller','Taller'],['historial','Historial']];
+ let h=`<div class="tabs">${tabs.map(([k,n])=>`<button data-tab="${k}" class="${S.tab===k?'on':''}">${n}</button>`).join('')}</div><div id="cont"></div>`;
+ $('#main').innerHTML=h;document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;pintarItem();});
+ const c=$('#cont');({resumen:tResumen,piezas:tPiezas,corte:tCorte,plano:tPlano,'3d':t3d,taller:tTaller,historial:tHist})[S.tab](it,c);}
+function tResumen(it,c){const rv=[...it.revisiones.map(r=>r.texto),...it.piezas.filter(p=>p.revisar).map(p=>p.codigo+': '+p.revisar)];
+ const hechos=JSON.parse(localStorage.getItem('fa_pasos_'+it.id)||'{}');
+ c.innerHTML=`<div class="fila">${badge(it.estado)}<span class="estado">${esc(it.proyectoNombre)} · ${esc(it.tipo)}</span></div><div class="caja">${esc(it.nota)}</div>
+ ${rv.length?`<h2 class="g">Para revisar (${rv.length})</h2>`+rv.map(t=>`<div class="rev">⚠ ${esc(t)}</div>`).join(''):''}
+ ${it.procesos.length?`<h2 class="g">Proceso</h2><div class="caja">`+it.procesos.map((p,i)=>`<label class="check"><input type="checkbox" data-k="${i}" ${hechos[i]?'checked':''}> <span>${esc(p.texto)}</span></label>`).join('')+`<p class="sub">Las marcas quedan en este aparato.</p></div>`:''}
+ ${it.docs.length?`<div class="fila">${it.docs.map(d=>`<a class="btn sec" href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.titulo)}</a>`).join('')}</div>`:''}`;
+ c.querySelectorAll('[data-k]').forEach(x=>x.onchange=()=>{hechos[x.dataset.k]=x.checked;localStorage.setItem('fa_pasos_'+it.id,JSON.stringify(hechos));});}
+function porMaterial(ps){const g={};for(const p of ps)(g[p.material]=g[p.material]||[]).push(p);return g;}
+function tPiezas(it,c){if(!it.piezas.length){c.innerHTML='<p class="vacio">Sin piezas todavía: está por diseñar.</p>';return;}
+ let h='<p class="sub">Medidas en mm. ⚠ = revisar antes de cortar.</p>';
+ for(const[m,ps]of Object.entries(porMaterial(it.piezas))){h+=`<h2 class="g">${esc(m)}</h2><table><colgroup><col style="width:17%"><col><col style="width:22%"><col style="width:12%"></colgroup><tr><th>Cód.</th><th>Pieza</th><th class="n">Largo</th><th class="n">Cant.</th></tr>`+
+  ps.map(p=>`<tr><td class="cod">${esc(p.codigo)}${p.revisar?' <span class="warn">⚠</span>':''}</td><td>${esc(p.nombre)}<div class="sub">${p.ancho?mm(p.ancho)+(p.esp?' × '+mm(p.esp):''):''}${p.detalle?' · '+esc(p.detalle):''}</div>${p.revisar?`<div class="sub warn">${esc(p.revisar)}</div>`:''}</td><td class="n">${mm(p.largo)}</td><td class="n">${p.cant??'—'}</td></tr>`).join('')+'</table>';}
+ if(it.herrajes.length)h+=`<h2 class="g">Herrajes</h2>`+(it.herrajesNota?`<div class="rev">⚠ ${esc(it.herrajesNota)}</div>`:'')+`<table><colgroup><col><col style="width:18%"></colgroup>`+it.herrajes.map(x=>`<tr><td>${esc(x.nombre)}${x.nota?`<div class="sub">${esc(x.nota)}</div>`:''}</td><td class="n">${x.cant} ${esc(x.und)}</td></tr>`).join('')+'</table>';
+ c.innerHTML=h;}
+/* Corte lineal: primero el más largo (FFD), 3 mm por corte. */
+function optimizar(ps,L){const lst=[];for(const p of ps){if(!p.largo||!p.cant)continue;for(let i=0;i<p.cant;i++)lst.push({c:p.codigo,l:p.largo});}
+ lst.sort((a,b)=>b.l-a.l);const bars=[],largas=[];
+ for(const x of lst){if(x.l>L){largas.push(x);continue;}let b=bars.find(b=>b.libre>=x.l+(b.p.length?KERF:0));if(!b){b={p:[],libre:L};bars.push(b);}b.libre-=x.l+(b.p.length?KERF:0);b.p.push(x);}
+ return{bars,largas,sin:ps.filter(p=>!p.largo||!p.cant)};}
+function tCorte(it,c){let h='';const g=porMaterial(it.piezas);
+ for(const[m,ps]of Object.entries(g)){const L=it.barras[m];if(!L)continue;const r=optimizar(ps,L);
+  h+=`<h2 class="g">${esc(m)} · barra de ${mm(L)}</h2><div class="caja"><b>${r.bars.length} ${r.bars.length===1?'barra':'barras'}</b>`+(r.largas.length?` <span class="warn">+ ${r.largas.length} piezas más largas que la barra (${r.largas.map(x=>x.c).join(', ')})</span>`:'')+(r.sin.length?`<div class="sub warn">Sin largo o cantidad: ${r.sin.map(p=>p.codigo).join(', ')}; no entran en la cuenta.</div>`:'')+
+   r.bars.map((b,i)=>`<div class="sub">Barra ${i+1} · sobra ${mm(Math.round(b.libre))}</div><div class="barra">${b.p.map(x=>`<span style="width:${x.l/L*100}%">${esc(x.c)}</span>`).join('')}</div>`).join('')+'</div>';}
+ const otros=Object.entries(g).filter(([m])=>!it.barras[m]);
+ if(otros.length)h+=`<h2 class="g">Láminas y otros</h2><table><colgroup><col><col style="width:28%"></colgroup>`+otros.map(([m,ps])=>{const a=ps.reduce((s,p)=>s+(p.largo&&p.ancho&&p.cant?p.largo*p.ancho*p.cant:0),0);return`<tr><td>${esc(m)}<div class="sub">${ps.map(p=>p.codigo+' ×'+(p.cant??'?')).join(', ')}</div></td><td class="n">${a?(a/1e6).toLocaleString('es-CO',{maximumFractionDigits:2})+' m²':'—'}</td></tr>`;}).join('')+'</table>';
+ if(it.materiales.length)h+=`<h2 class="g">Compras</h2><table><colgroup><col><col style="width:28%"></colgroup>`+it.materiales.map(x=>`<tr><td>${esc(x.nombre)}${x.nota?`<div class="sub">${esc(x.nota)}</div>`:''}</td><td class="n">${typeof x.cant==='number'?x.cant.toLocaleString('es-CO'):esc(x.cant)} ${esc(x.und)}</td></tr>`).join('')+'</table>';
+ c.innerHTML=h||'<p class="vacio">Sin piezas todavía.</p>';}
+function tPlano(it,c){c.innerHTML=it.planos.map((p,i)=>`<div class="caja hoja"><b>${esc(p.titulo)}</b><img data-k="${i}" alt=""></div>`).join('');
+ c.querySelectorAll('[data-k]').forEach(async img=>{const p=it.planos[+img.dataset.k];try{img.src=await url(p.lo,it.actualizado);}catch(e){}
+  img.onclick=async()=>{$('#zoom').style.display='block';$('#zi').src=img.src;try{$('#zi').src=await url(p.hi,it.actualizado);}catch(e){}};});}
+function t3d(it,c){c.innerHTML='<p class="estado" id="e3">Cargando 3D…</p><iframe class="visor" id="vis" title="3D"></iframe>';
+ archivo(it.visor,it.actualizado).then(b=>b.text()).then(t=>{$('#vis').srcdoc=t;$('#e3').textContent='';}).catch(()=>{$('#e3').textContent='No se pudo cargar el 3D (sin señal y sin guardar).';});}
+function tTaller(it,c){const ps=it.piezas.filter(p=>p.largo);
+ c.innerHTML=`<p class="sub">Dicta o escribe el largo (y si quieres el ancho) de una pieza sin marcar. Tolerancia 3 mm.</p><div class="fila"><input class="campo" id="med" inputmode="decimal" placeholder="Ej. 2975 o 615 80"><button class="btn" id="mic">🎤</button></div><div id="out"></div>`;
+ const buscar=()=>{const n=($('#med').value.match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(',','.')));if(!n.length){$('#out').innerHTML='';return;}
+  const hit=ps.filter(p=>{const d=[p.largo,p.ancho,p.esp].filter(Boolean);return n.every(v=>d.some(x=>Math.abs(x-v)<=3));}).sort((a,b)=>Math.abs(a.largo-n[0])-Math.abs(b.largo-n[0]));
+  $('#out').innerHTML=hit.length?hit.map(p=>`<div class="caja"><div class="res">${esc(p.codigo)}</div>${esc(p.nombre)} · ${esc(p.material)}<div class="sub">${mm(p.largo)}${p.ancho?' × '+mm(p.ancho):''}${p.esp?' × '+mm(p.esp):''} · ${p.cant??'?'} und</div></div>`).join(''):'<p class="vacio">Ninguna pieza con esa medida.</p>';
+  if(hit.length&&speechSynthesis){const u=new SpeechSynthesisUtterance(hit.map(p=>p.codigo).join(', o ')),l='es-CO';u.lang=l;speechSynthesis.cancel();speechSynthesis.speak(u);}};
+ $('#med').oninput=()=>{clearTimeout($('#med')._t);$('#med')._t=setTimeout(buscar,500);};
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ $('#mic').onclick=()=>{if(!SR)return toast('Este navegador no reconoce voz');const r=new SR();r.lang='es-CO';r.onresult=e=>{$('#med').value=e.results[0][0].transcript;buscar();};r.onerror=()=>toast('No te entendí; repite');r.start();toast('Escuchando…');};}
+function tHist(it,c){c.innerHTML=it.historial.slice().reverse().map(x=>`<div class="caja"><b>${esc(x.fecha)}</b> · <span class="sub">${esc(x.tipo)}</span><div>${esc(x.texto)}</div></div>`).join('')||'<p class="vacio">Sin historial.</p>';}
+function pintarAjustes(){$('#titulo').textContent='Ajustes';
+ $('#main').innerHTML=`<p class="estado">${esc(estado)}</p><div class="rev">Usa la llave de la Bitácora si ya la abriste en este navegador. Si no, pega aquí la llave "Bitacora celular".</div>
+ <div class="fila"><input class="campo" id="tok" type="password" placeholder="${token?'Hay una llave guardada':'github_pat_…'}"></div>
+ <div class="fila"><button class="btn" id="bTok">Guardar llave</button><button class="btn sec" id="bBit">Usar la de la Bitácora</button><button class="btn sec" id="bSync">Actualizar</button></div><p class="estado">Versión ${VERSION} · datos en ${GH.repo}/${GH.carpeta}</p>`;
+ $('#bTok').onclick=()=>{const v=$('#tok').value.trim();if(!v)return toast('Pega primero la llave');token=v;localStorage.setItem('fa_token',v);toast('Llave guardada');cargar(true);};
+ $('#bBit').onclick=async()=>{const v=await llaveBitacora();if(!v)return toast('No encontré la llave de la Bitácora');token=v;localStorage.setItem('fa_token',v);toast('Lista');cargar(true);};
+ $('#bSync').onclick=()=>{items={};cargar(true);};}
+$('#atras').onclick=()=>{S.vista='inicio';pintar();};$('#aj').onclick=()=>{S.vista='ajustes';pintar();};
+$('#zc').onclick=()=>{$('#zoom').style.display='none';};
+addEventListener('online',()=>cargar(true));
+(async()=>{token=localStorage.getItem('fa_token')||'';if(!token){token=await llaveBitacora();if(token)localStorage.setItem('fa_token',token);}
+ pintar();cargar();if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});})();
+</script>
+</body>
+</html>
