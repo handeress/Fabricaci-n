@@ -1,5 +1,5 @@
 // Subir el número en cada cambio de la app para que el celular tome la versión nueva.
-const CACHE = 'fabricacion-v2';
+const CACHE = 'fabricacion-v3';
 const ARCHIVOS = ['./', 'index.html', 'manifest.json', 'icono-192.png', 'icono-512.png'];
 
 self.addEventListener('install', e => {
