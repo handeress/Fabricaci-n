@@ -21,3 +21,5 @@ Al cambiar un ítem desde el chat: se edita su item.json, se agrega una línea a
 - 1.0 (22/11/2026): torre del calentador, tapas de cajas, piezas de la fogata, closet en paneles de Fontanar y 4 ítems por diseñar.
 
 - 1.2 (23-nov-2026): botón Instalar en el celular; atrás va de subpágina a la página inicial del elemento, luego al inicio y luego cierra la app.
+
+- 1.3 (23-nov-2026): recuerda el elemento y la pestaña al recargar (12 h); el 3D guarda su vista (cámara, filtros, corte, separación, abierto) y se recarga solo si el celular lo borra al cambiar de app.
