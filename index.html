@@ -63,7 +63,7 @@ input.campo{flex:1;min-width:0;background:var(--hoja);border:1px solid var(--lin
 <div id="toast"></div>
 <script>
 'use strict';
-const VERSION='1.1',GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'fabricacion'},KERF=3;
+const VERSION='1.2',GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'fabricacion'},KERF=3;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const S={vista:'inicio',proy:localStorage.getItem('fa_proy')||'todos',id:null,tab:'resumen'};
 let token='',ind=null,items={},estado='',urls={};
@@ -89,7 +89,11 @@ async function item(id){const m=ind.items.find(x=>x.id===id);if(!items[id]||item
 const EST={'diseñado':['diseñado','Diseñado'],'borrador':['borrador','Borrador'],'por diseñar':['por','Por diseñar'],'en fabricación':['fab','En fabricación'],'terminado':['ter','Terminado']};
 const badge=e=>{const x=EST[e]||['','—'];return `<span class="est ${x[0]}">${x[1]}</span>`;};
 const mm=v=>v==null||v===''?'—':Number(v).toLocaleString('es-CO');
-function pintar(){$('#atras').hidden=S.vista==='inicio';
+// Atrás: subpágina → página inicial del elemento → inicio de la app → cierra la app.
+function nivel(){if(S.vista==='inicio')return 0;if(S.vista==='item'&&S.tab!=='resumen')return 2;return 1;}
+function syncHist(){const L=nivel(),n=(history.state&&history.state.n)||0;if(L>n){for(let i=n+1;i<=L;i++)history.pushState({n:i},'');}else if(L===n)history.replaceState({n:L},'');else history.go(L-n);}
+window.addEventListener('popstate',e=>{const n=(e.state&&e.state.n)||0;if(n===0)S.vista='inicio';else if(n===1&&S.vista==='item')S.tab='resumen';scrollTo(0,0);pintar();});
+function pintar(){syncHist();$('#atras').hidden=S.vista==='inicio';
  if(S.vista==='ajustes')return pintarAjustes();
  if(S.vista==='item')return pintarItem();
  $('#titulo').textContent='Fabricación';
@@ -106,7 +110,7 @@ async function pintarItem(){let it;try{it=await item(S.id);}catch(e){$('#main').
  $('#titulo').textContent=it.nombre;
  const tabs=[['resumen','Resumen'],['piezas','Piezas'],['corte','Corte y compras'],...(it.planos.length?[['plano','Plano']]:[]),...(it.visor?[['3d','3D']]:[]),['taller','Taller'],['historial','Historial']];
  let h=`<div class="tabs">${tabs.map(([k,n])=>`<button data-tab="${k}" class="${S.tab===k?'on':''}">${n}</button>`).join('')}</div><div id="cont"></div>`;
- $('#main').innerHTML=h;document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;pintarItem();});
+ $('#main').innerHTML=h;document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;pintar();});
  const c=$('#cont');({resumen:tResumen,piezas:tPiezas,corte:tCorte,plano:tPlano,'3d':t3d,taller:tTaller,historial:tHist})[S.tab](it,c);}
 function tResumen(it,c){const rv=[...it.revisiones.map(r=>r.texto),...it.piezas.filter(p=>p.revisar).map(p=>p.codigo+': '+p.revisar)];
  const hechos=JSON.parse(localStorage.getItem('fa_pasos_'+it.id)||'{}');
@@ -157,7 +161,7 @@ function pintarAjustes(){$('#titulo').textContent='Ajustes';
  $('#bTok').onclick=()=>{const v=$('#tok').value.trim();if(!v)return toast('Pega primero la llave');token=v;localStorage.setItem('fa_token',v);toast('Llave guardada');cargar(true);};
  $('#bBit').onclick=async()=>{const v=await llaveBitacora();if(!v)return toast('No encontré la llave de la Bitácora');token=v;localStorage.setItem('fa_token',v);toast('Lista');cargar(true);};
  $('#bSync').onclick=()=>{items={};cargar(true);};}
-$('#atras').onclick=()=>{S.vista='inicio';pintar();};$('#aj').onclick=()=>{S.vista='ajustes';pintar();};
+$('#atras').onclick=()=>history.back();$('#aj').onclick=()=>{S.vista='ajustes';pintar();};
 $('#zc').onclick=()=>{$('#zoom').style.display='none';};
 addEventListener('online',()=>cargar(true));
 (async()=>{token=localStorage.getItem('fa_token')||'';if(!token){token=await llaveBitacora();if(token)localStorage.setItem('fa_token',token);}
